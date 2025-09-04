@@ -1,24 +1,19 @@
 # Veritas
 
-A collection of input validations
+A simple Go validation library
 
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.19-blue.svg)](https://golang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yourusername/veritas)](https://goreportcard.com/report/github.com/yourusername/veritas)
-[![GoDoc](https://godoc.org/github.com/yourusername/veritas?status.svg)](https://godoc.org/github.com/yourusername/veritas)
 
-Veritas is a comprehensive Go validation library that provides a collection of input validation functions for various data formats and business requirements.
+Veritas is a simple Go validation library that provides essential validation functions for common data types.
 
 ## Features
 
 - **Document Validation**: CNPJ, CPF validation with proper algorithms
 - **Contact Validation**: Email, phone number, URL validation
-- **Business Validation**: SKU, price, stock quantity, barcode validation
-- **String Validation**: Length, pattern, username, password, slug, UUID validation
-- **Numeric Validation**: Price, stock, percentage, number range validation
-- **Custom Validators**: Easy to extend with custom validation rules
-- **Error Handling**: Detailed validation error messages with types
-- **Performance**: Optimized for high-performance applications
+- **String Validation**: Length validation
+- **Number Validation**: IsNumber, IsPositive, IsNegative, IsEven, BiggerThan, SmallerThan, Between, IsPrime
+- **Simple Error Handling**: Standard Go error pattern (nil = valid, error = invalid)
 
 ## Installation
 
@@ -40,21 +35,21 @@ func main() {
     v := veritas.New()
     
     // Validate CNPJ
-    if err := v.ValidateCNPJ("11.222.333/0001-81"); err != nil {
+    if err := v.CNPJ("11.222.333/0001-81"); err != nil {
         fmt.Printf("Invalid CNPJ: %v\n", err)
     } else {
         fmt.Println("Valid CNPJ!")
     }
     
     // Validate CPF
-    if err := v.ValidateCPF("123.456.789-09"); err != nil {
+    if err := v.CPF("123.456.789-09"); err != nil {
         fmt.Printf("Invalid CPF: %v\n", err)
     } else {
         fmt.Println("Valid CPF!")
     }
     
     // Validate Email
-    if err := v.ValidateEmail("user@example.com"); err != nil {
+    if err := v.Email("user@example.com"); err != nil {
         fmt.Printf("Invalid email: %v\n", err)
     } else {
         fmt.Println("Valid email!")
@@ -70,21 +65,15 @@ func main() {
 v := veritas.New()
 
 // CNPJ validation (Brazilian corporate tax ID)
-err := v.ValidateCNPJ("11.222.333/0001-81")
+err := v.CNPJ("11.222.333/0001-81")
 if err != nil {
     log.Printf("CNPJ validation failed: %v", err)
 }
 
 // CPF validation (Brazilian individual tax ID)
-err = v.ValidateCPF("123.456.789-09")
+err = v.CPF("123.456.789-09")
 if err != nil {
     log.Printf("CPF validation failed: %v", err)
-}
-
-// CPF or CNPJ validation (auto-detects based on length)
-err = v.ValidateCPFOrCNPJ("123.456.789-09")
-if err != nil {
-    log.Printf("Document validation failed: %v", err)
 }
 ```
 
@@ -92,73 +81,41 @@ if err != nil {
 
 ```go
 // Email validation
-err := v.ValidateEmail("user@example.com")
+err := v.Email("user@example.com")
 
-// Phone number validation (international)
-err = v.ValidatePhone("+5511999999999")
+// Brazilian phone validation (mobile and landline)
+err = v.Phone("+55 41 9.9504-8710")  // Mobile
+err = v.Phone("+55 41 3346-4468")    // Landline
+err = v.Phone("41 9.9504-8710")      // Mobile without +55
+err = v.Phone("41 3346-4468")        // Landline without +55
 
-// Brazilian phone validation
-err = v.ValidateBrazilianPhone("11999999999")
-
-// US phone validation
-err = v.ValidateUSPhone("1234567890")
-
-// URL validation
-err = v.ValidateURL("https://example.com")
-```
-
-### Business Data
-
-```go
-// SKU validation
-err := v.ValidateSKU("ABC-123-XYZ")
-
-// Price validation (positive number with up to 2 decimal places)
-err = v.ValidatePrice("29.99")
-
-// Stock quantity validation
-err = v.ValidateStockQuantity(100)
+// URL validation (checks format + HTTP 200 status)
+err = v.URL("https://example.com")
 ```
 
 ### String Validation
 
 ```go
 // String length validation
-err := v.ValidateStringLength("hello", 3, 10)
-
-// Username validation
-err = v.ValidateUsername("user123")
-
-// Password validation
-err = v.ValidatePassword("MyPass123")
-
-// Strong password validation
-err = v.ValidateStrongPassword("MyStr0ng!Pass")
-
-// URL slug validation
-err = v.ValidateSlug("my-awesome-slug")
-
-// UUID validation
-err = v.ValidateUUID("550e8400-e29b-41d4-a716-446655440000")
-
-// Hex color validation
-err = v.ValidateHexColor("#FF5733")
+err := v.String("hello", 3, 10)  // min 3, max 10 characters
 ```
 
-### Numeric Validation
+### Number Validation
 
 ```go
-// Positive number validation
-err := v.ValidatePositiveNumber(42)
+// Basic number validation
+err := v.IsNumber(42)           // Check if it's a valid number
+err := v.IsPositive(42)         // Check if positive
+err := v.IsNegative(-5)         // Check if negative
+err := v.IsEven(8)              // Check if even
 
-// Number range validation
-err = v.ValidateNumberRange(50, 10, 100)
+// Comparison validation
+err := v.BiggerThan(10, 5)      // 10 > 5
+err := v.SmallerThan(3, 10)     // 3 < 10
+err := v.Between(15, 10, 20)    // 10 <= 15 <= 20
 
-// Percentage validation
-err = v.ValidatePercentage(85.5)
-
-// Barcode validation (EAN-13, UPC-A)
-err = v.ValidateBarcode("1234567890123")
+// Prime number validation
+err := v.IsPrime(17)            // Check if prime
 ```
 
 ## API Reference
@@ -167,68 +124,62 @@ err = v.ValidateBarcode("1234567890123")
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `ValidateCNPJ(cnpj interface{}) error` | Validates Brazilian CNPJ | `"11.222.333/0001-81"` |
-| `ValidateCPF(cpf interface{}) error` | Validates Brazilian CPF | `"123.456.789-09"` |
-| `ValidateEmail(email interface{}) error` | Validates email format | `"user@example.com"` |
-| `ValidatePhone(phone interface{}) error` | Validates international phone | `"+5511999999999"` |
-| `ValidateBrazilianPhone(phone interface{}) error` | Validates Brazilian phone | `"11999999999"` |
-| `ValidateURL(url interface{}) error` | Validates URL format | `"https://example.com"` |
-| `ValidateSKU(sku interface{}) error` | Validates SKU format | `"ABC-123-XYZ"` |
-| `ValidatePrice(price interface{}) error` | Validates price format | `"29.99"` |
-| `ValidateStockQuantity(qty interface{}) error` | Validates stock quantity | `100` |
-| `ValidateStringLength(str interface{}, min, max int) error` | Validates string length | `"hello", 3, 10` |
-| `ValidateUsername(username interface{}) error` | Validates username format | `"user123"` |
-| `ValidatePassword(password interface{}) error` | Validates password format | `"MyPass123"` |
-| `ValidateUUID(uuid interface{}) error` | Validates UUID format | `"550e8400-e29b-41d4-a716-446655440000"` |
+| `CNPJ(cnpj interface{}) error` | Validates Brazilian CNPJ | `"11.222.333/0001-81"` |
+| `CPF(cpf interface{}) error` | Validates Brazilian CPF | `"123.456.789-09"` |
+| `Email(email interface{}) error` | Validates email format | `"user@example.com"` |
+| `Phone(phone interface{}) error` | Validates Brazilian phone | `"+55 41 9.9504-8710"` |
+| `URL(url interface{}) error` | Validates URL + HTTP 200 | `"https://example.com"` |
+| `String(str interface{}, min, max int) error` | Validates string length | `"hello", 3, 10` |
+| `IsNumber(num interface{}) error` | Validates if number | `42` |
+| `IsPositive(num interface{}) error` | Validates if positive | `42` |
+| `IsNegative(num interface{}) error` | Validates if negative | `-5` |
+| `IsEven(num interface{}) error` | Validates if even | `8` |
+| `BiggerThan(num interface{}, than float64) error` | Validates if bigger | `10, 5` |
+| `SmallerThan(num interface{}, than float64) error` | Validates if smaller | `3, 10` |
+| `Between(num interface{}, min, max float64) error` | Validates if between | `15, 10, 20` |
+| `IsPrime(num interface{}) error` | Validates if prime | `17` |
 
 ### Error Handling
 
+All validation functions follow the standard Go error pattern:
+
 ```go
 v := veritas.New()
 
-err := v.ValidateCNPJ("invalid-cnpj")
+err := v.CNPJ("invalid-cnpj")
 if err != nil {
     fmt.Printf("Validation error: %v\n", err)
-}
-
-// Using ValidationError type for detailed error handling
-validationErr := v.Validate("cnpj", "invalid-cnpj", v.ValidateCNPJ)
-if validationErr != nil {
-    fmt.Printf("Field: %s, Type: %s, Message: %s\n", 
-        validationErr.Field, validationErr.Type, validationErr.Message)
+} else {
+    fmt.Println("Valid!")
 }
 ```
 
-## Custom Validators
+## Brazilian Phone Number Format
 
-You can easily extend Veritas with custom validators:
+The phone validation supports Brazilian phone numbers:
 
-```go
-// Custom validator function
-func ValidateCustomField(value interface{}) error {
-    str, ok := value.(string)
-    if !ok {
-        return fmt.Errorf("value must be a string")
-    }
-    if len(str) < 5 {
-        return fmt.Errorf("field must be at least 5 characters long")
-    }
-    return nil
-}
+**Mobile numbers:**
+- `+55 41 9.9504-8710` (with country code)
+- `41 9.9504-8710` (without country code)
 
-// Usage with Veritas
-v := veritas.New()
-err := v.Validate("custom_field", "test", ValidateCustomField)
-```
+**Landline numbers:**
+- `+55 41 3346-4468` (with country code)
+- `41 3346-4468` (without country code)
 
-## Performance
+The validation checks:
+- Valid Brazilian area codes (DDD)
+- Mobile numbers must start with 9 after area code
+- Proper digit validation
+- Handles formatted input (spaces, dots, hyphens, parentheses)
 
-Veritas is optimized for performance:
+## URL Validation
 
-- **Minimal allocations** - reuses regex patterns
-- **Fast algorithms** - optimized validation logic
-- **Concurrent safe** - can be used in goroutines
-- **Memory efficient** - no global state
+The URL validation not only checks the format but also verifies the URL is accessible:
+
+- Validates URL format (scheme, host)
+- Makes HTTP HEAD request
+- Verifies HTTP 200 status code
+- 10-second timeout
 
 ## Contributing
 
@@ -238,16 +189,9 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+3. Commit your changes (`git checkout -b feature/amazing-feature`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-### Adding New Validators
-
-1. Add the validator function to the appropriate file
-2. Add comprehensive tests
-3. Update documentation
-4. Ensure all tests pass
 
 ## Testing
 
@@ -259,7 +203,7 @@ go test ./...
 go test -cover ./...
 
 # Run specific test
-go test -run TestValidateCNPJ
+go test -run TestCNPJ
 ```
 
 ## License
@@ -270,18 +214,17 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Brazilian tax ID validation algorithms based on official specifications
 - Email validation follows RFC 5322 standards
-- Phone number validation supports international formats
+- Phone number validation supports Brazilian formats
 
 ## Changelog
 
-### v1.0.0
+### v0.1.0
 - Initial release
 - CNPJ, CPF validation with proper algorithms
 - Email, phone, URL validation
-- String validation (length, pattern, username, password, slug, UUID)
-- Numeric validation (price, stock, percentage, barcode)
-- Business data validation (SKU, price, stock quantity)
-- Comprehensive error handling with types
+- String length validation
+- Number validation (IsNumber, IsPositive, IsNegative, IsEven, BiggerThan, SmallerThan, Between, IsPrime)
+- Simple error handling with standard Go pattern
 
 ---
 
