@@ -8,18 +8,18 @@ import (
 	"strings"
 )
 
-// IsNumber validates that a value is a valid number.
-func (v *Validator) IsNumber(num interface{}) error {
-	_, err := v.parseNumber(num)
+// ValidateNumber validates that a value is a valid number.
+func ValidateNumber(num interface{}) error {
+	_, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-// IsPositive validates that a number is positive (> 0).
-func (v *Validator) IsPositive(num interface{}) error {
-	numValue, err := v.parseNumber(num)
+// ValidatePositive validates that a number is positive (> 0).
+func ValidatePositive(num interface{}) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -29,9 +29,9 @@ func (v *Validator) IsPositive(num interface{}) error {
 	return nil
 }
 
-// IsNegative validates that a number is negative (< 0).
-func (v *Validator) IsNegative(num interface{}) error {
-	numValue, err := v.parseNumber(num)
+// ValidateNegative validates that a number is negative (< 0).
+func ValidateNegative(num interface{}) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -41,9 +41,9 @@ func (v *Validator) IsNegative(num interface{}) error {
 	return nil
 }
 
-// IsEven validates that a number is even.
-func (v *Validator) IsEven(num interface{}) error {
-	numValue, err := v.parseNumber(num)
+// ValidateEven validates that a number is even.
+func ValidateEven(num interface{}) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -53,9 +53,9 @@ func (v *Validator) IsEven(num interface{}) error {
 	return nil
 }
 
-// BiggerThan validates that a number is bigger than the given value.
-func (v *Validator) BiggerThan(num interface{}, than float64) error {
-	numValue, err := v.parseNumber(num)
+// ValidateBiggerThan validates that a number is bigger than the given value.
+func ValidateBiggerThan(num interface{}, than float64) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -65,9 +65,9 @@ func (v *Validator) BiggerThan(num interface{}, than float64) error {
 	return nil
 }
 
-// SmallerThan validates that a number is smaller than the given value.
-func (v *Validator) SmallerThan(num interface{}, than float64) error {
-	numValue, err := v.parseNumber(num)
+// ValidateSmallerThan validates that a number is smaller than the given value.
+func ValidateSmallerThan(num interface{}, than float64) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -77,9 +77,9 @@ func (v *Validator) SmallerThan(num interface{}, than float64) error {
 	return nil
 }
 
-// Between validates that a number is between min and max (inclusive).
-func (v *Validator) Between(num interface{}, min, max float64) error {
-	numValue, err := v.parseNumber(num)
+// ValidateBetween validates that a number is between min and max (inclusive).
+func ValidateBetween(num interface{}, min, max float64) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -89,9 +89,9 @@ func (v *Validator) Between(num interface{}, min, max float64) error {
 	return nil
 }
 
-// IsPrime validates that a number is a prime number.
-func (v *Validator) IsPrime(num interface{}) error {
-	numValue, err := v.parseNumber(num)
+// ValidatePrime validates that a number is a prime number.
+func ValidatePrime(num interface{}) error {
+	numValue, err := parseNumber(num)
 	if err != nil {
 		return err
 	}
@@ -117,11 +117,11 @@ func (v *Validator) IsPrime(num interface{}) error {
 }
 
 // parseNumber converts various number types to float64.
-func (v *Validator) parseNumber(number interface{}) (float64, error) {
+func parseNumber(number interface{}) (float64, error) {
 	switch n := number.(type) {
 	case string:
 		n = strings.TrimSpace(n)
-		if v.IsEmpty(n) {
+		if isEmpty(n) {
 			return 0, fmt.Errorf("number cannot be empty")
 		}
 		return strconv.ParseFloat(n, 64)

@@ -6,15 +6,15 @@ import (
 	"regexp"
 )
 
-// Email validates an email address format.
-func (v *Validator) Email(email interface{}) error {
+// ValidateEmail validates an email address format.
+func ValidateEmail(email interface{}) error {
 	emailStr, ok := email.(string)
 	if !ok {
 		return fmt.Errorf("email must be a string")
 	}
 
-	emailStr = v.CleanString(emailStr, true)
-	if v.IsEmpty(emailStr) {
+	emailStr = cleanString(emailStr, true)
+	if isEmpty(emailStr) {
 		return fmt.Errorf("email cannot be empty")
 	}
 

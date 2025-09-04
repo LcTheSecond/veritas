@@ -6,8 +6,8 @@ import (
 	"unicode/utf8"
 )
 
-// String validates that a string is not empty and within length bounds.
-func (v *Validator) String(str interface{}, minLength, maxLength int) error {
+// ValidateString validates that a string is not empty and within length bounds.
+func ValidateString(str interface{}, minLength, maxLength int) error {
 	strValue, ok := str.(string)
 	if !ok {
 		return fmt.Errorf("value must be a string")

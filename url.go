@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-// URL validates a URL format.
-func (v *Validator) URL(urlStr interface{}) error {
+// ValidateURL validates a URL format.
+func ValidateURL(urlStr interface{}) error {
 	urlStr, ok := urlStr.(string)
 	if !ok {
 		return fmt.Errorf("URL must be a string")
 	}
 
-	urlStr = v.CleanString(urlStr.(string), false)
-	if v.IsEmpty(urlStr.(string)) {
+	urlStr = cleanString(urlStr.(string), false)
+	if isEmpty(urlStr.(string)) {
 		return fmt.Errorf("URL cannot be empty")
 	}
 

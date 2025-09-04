@@ -2,21 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/LcTheSecond/veritas"
 )
 
 func main() {
-	// Create a new validator instance
-	v := veritas.New()
-
 	fmt.Println("=== Veritas Validation Library Demo ===\n")
 
 	// Test CNPJ validation
 	fmt.Println("1. CNPJ Validation:")
 	cnpj := "11.222.333/0001-81"
-	if err := v.ValidateCNPJ(cnpj); err != nil {
+	if err := veritas.ValidateCNPJ(cnpj); err != nil {
 		fmt.Printf("   ❌ Invalid CNPJ '%s': %v\n", cnpj, err)
 	} else {
 		fmt.Printf("   ✅ Valid CNPJ: %s\n", cnpj)
@@ -25,7 +21,7 @@ func main() {
 	// Test CPF validation
 	fmt.Println("\n2. CPF Validation:")
 	cpf := "123.456.789-09"
-	if err := v.ValidateCPF(cpf); err != nil {
+	if err := veritas.ValidateCPF(cpf); err != nil {
 		fmt.Printf("   ❌ Invalid CPF '%s': %v\n", cpf, err)
 	} else {
 		fmt.Printf("   ✅ Valid CPF: %s\n", cpf)
@@ -34,7 +30,7 @@ func main() {
 	// Test email validation
 	fmt.Println("\n3. Email Validation:")
 	email := "user@example.com"
-	if err := v.ValidateEmail(email); err != nil {
+	if err := veritas.ValidateEmail(email); err != nil {
 		fmt.Printf("   ❌ Invalid email '%s': %v\n", email, err)
 	} else {
 		fmt.Printf("   ✅ Valid email: %s\n", email)
@@ -42,69 +38,74 @@ func main() {
 
 	// Test phone validation
 	fmt.Println("\n4. Phone Validation:")
-	phone := "+5511999999999"
-	if err := v.ValidateBrazilianPhone(phone); err != nil {
+	phone := "+55 41 99504-8710"
+	if err := veritas.ValidatePhone(phone); err != nil {
 		fmt.Printf("   ❌ Invalid phone '%s': %v\n", phone, err)
 	} else {
 		fmt.Printf("   ✅ Valid phone: %s\n", phone)
 	}
 
-	// Test price validation
-	fmt.Println("\n5. Price Validation:")
-	price := "29.99"
-	if err := v.ValidatePrice(price); err != nil {
-		fmt.Printf("   ❌ Invalid price '%s': %v\n", price, err)
+	// Test URL validation
+	fmt.Println("\n5. URL Validation:")
+	url := "https://www.google.com"
+	if err := veritas.ValidateURL(url); err != nil {
+		fmt.Printf("   ❌ Invalid URL '%s': %v\n", url, err)
 	} else {
-		fmt.Printf("   ✅ Valid price: %s\n", price)
+		fmt.Printf("   ✅ Valid URL: %s\n", url)
 	}
 
-	// Test SKU validation
-	fmt.Println("\n6. SKU Validation:")
-	sku := "PROD-123-ABC"
-	if err := v.ValidateSKU(sku); err != nil {
-		fmt.Printf("   ❌ Invalid SKU '%s': %v\n", sku, err)
+	// Test string validation
+	fmt.Println("\n6. String Validation:")
+	str := "hello world"
+	if err := veritas.ValidateString(str, 5, 20); err != nil {
+		fmt.Printf("   ❌ Invalid string '%s': %v\n", str, err)
 	} else {
-		fmt.Printf("   ✅ Valid SKU: %s\n", sku)
+		fmt.Printf("   ✅ Valid string: %s\n", str)
 	}
 
-	// Test multiple validations
-	fmt.Println("\n7. Multiple Validations:")
-	errors := v.ValidateMultiple(
-		func() *veritas.ValidationError {
-			if err := v.ValidateEmail("invalid-email"); err != nil {
-				return veritas.NewValidationError("email", veritas.ErrorTypeInvalid, err.Error(), "invalid-email")
-			}
-			return nil
-		},
-		func() *veritas.ValidationError {
-			if err := v.ValidateStringLength("short", 10, 100); err != nil {
-				return veritas.NewValidationError("description", veritas.ErrorTypeTooShort, err.Error(), "short")
-			}
-			return nil
-		},
-	)
+	// Test number validations
+	fmt.Println("\n7. Number Validations:")
 
-	if len(errors) > 0 {
-		fmt.Printf("   ❌ Found %d validation errors:\n", len(errors))
-		for _, err := range errors {
-			fmt.Printf("      - %s: %s\n", err.Field, err.Message)
-		}
+	// ValidateNumber
+	if err := veritas.ValidateNumber("123.45"); err != nil {
+		fmt.Printf("   ❌ '123.45' is not a number: %v\n", err)
 	} else {
-		fmt.Println("   ✅ All validations passed!")
+		fmt.Printf("   ✅ '123.45' is a number\n")
 	}
 
-	// Test formatting functions
-	fmt.Println("\n8. Formatting Functions:")
-	if formatted, err := v.FormatCPF("12345678909"); err != nil {
-		log.Printf("Error formatting CPF: %v", err)
+	// ValidatePositive
+	if err := veritas.ValidatePositive(10); err != nil {
+		fmt.Printf("   ❌ '10' is not positive: %v\n", err)
 	} else {
-		fmt.Printf("   Formatted CPF: %s\n", formatted)
+		fmt.Printf("   ✅ '10' is positive\n")
 	}
 
-	if formatted, err := v.FormatPrice(29.99, "USD"); err != nil {
-		log.Printf("Error formatting price: %v", err)
+	// ValidateEven
+	if err := veritas.ValidateEven(4); err != nil {
+		fmt.Printf("   ❌ '4' is not even: %v\n", err)
 	} else {
-		fmt.Printf("   Formatted price: %s\n", formatted)
+		fmt.Printf("   ✅ '4' is even\n")
+	}
+
+	// ValidateBiggerThan
+	if err := veritas.ValidateBiggerThan(20, 15); err != nil {
+		fmt.Printf("   ❌ '20' is not bigger than '15': %v\n", err)
+	} else {
+		fmt.Printf("   ✅ '20' is bigger than '15'\n")
+	}
+
+	// ValidateBetween
+	if err := veritas.ValidateBetween(50, 10, 100); err != nil {
+		fmt.Printf("   ❌ '50' is not between '10' and '100': %v\n", err)
+	} else {
+		fmt.Printf("   ✅ '50' is between '10' and '100'\n")
+	}
+
+	// ValidatePrime
+	if err := veritas.ValidatePrime(7); err != nil {
+		fmt.Printf("   ❌ '7' is not prime: %v\n", err)
+	} else {
+		fmt.Printf("   ✅ '7' is prime\n")
 	}
 
 	fmt.Println("\n=== Demo Complete ===")

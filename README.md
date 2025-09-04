@@ -32,24 +32,22 @@ import (
 )
 
 func main() {
-    v := veritas.New()
-    
     // Validate CNPJ
-    if err := v.CNPJ("11.222.333/0001-81"); err != nil {
+    if err := veritas.ValidateCNPJ("11.222.333/0001-81"); err != nil {
         fmt.Printf("Invalid CNPJ: %v\n", err)
     } else {
         fmt.Println("Valid CNPJ!")
     }
     
     // Validate CPF
-    if err := v.CPF("123.456.789-09"); err != nil {
+    if err := veritas.ValidateCPF("123.456.789-09"); err != nil {
         fmt.Printf("Invalid CPF: %v\n", err)
     } else {
         fmt.Println("Valid CPF!")
     }
     
     // Validate Email
-    if err := v.Email("user@example.com"); err != nil {
+    if err := veritas.ValidateEmail("user@example.com"); err != nil {
         fmt.Printf("Invalid email: %v\n", err)
     } else {
         fmt.Println("Valid email!")
@@ -62,16 +60,14 @@ func main() {
 ### Document Validation
 
 ```go
-v := veritas.New()
-
 // CNPJ validation (Brazilian corporate tax ID)
-err := v.CNPJ("11.222.333/0001-81")
+err := veritas.ValidateCNPJ("11.222.333/0001-81")
 if err != nil {
     log.Printf("CNPJ validation failed: %v", err)
 }
 
 // CPF validation (Brazilian individual tax ID)
-err = v.CPF("123.456.789-09")
+err = veritas.ValidateCPF("123.456.789-09")
 if err != nil {
     log.Printf("CPF validation failed: %v", err)
 }
@@ -81,41 +77,41 @@ if err != nil {
 
 ```go
 // Email validation
-err := v.Email("user@example.com")
+err := veritas.ValidateEmail("user@example.com")
 
 // Brazilian phone validation (mobile and landline)
-err = v.Phone("+55 41 9.9504-8710")  // Mobile
-err = v.Phone("+55 41 3346-4468")    // Landline
-err = v.Phone("41 9.9504-8710")      // Mobile without +55
-err = v.Phone("41 3346-4468")        // Landline without +55
+err = veritas.ValidatePhone("+55 41 9.9504-8710")  // Mobile
+err = veritas.ValidatePhone("+55 41 3346-4468")    // Landline
+err = veritas.ValidatePhone("41 9.9504-8710")      // Mobile without +55
+err = veritas.ValidatePhone("41 3346-4468")        // Landline without +55
 
 // URL validation (checks format + HTTP 200 status)
-err = v.URL("https://example.com")
+err = veritas.ValidateURL("https://example.com")
 ```
 
 ### String Validation
 
 ```go
 // String length validation
-err := v.String("hello", 3, 10)  // min 3, max 10 characters
+err := veritas.ValidateString("hello", 3, 10)  // min 3, max 10 characters
 ```
 
 ### Number Validation
 
 ```go
 // Basic number validation
-err := v.IsNumber(42)           // Check if it's a valid number
-err := v.IsPositive(42)         // Check if positive
-err := v.IsNegative(-5)         // Check if negative
-err := v.IsEven(8)              // Check if even
+err := veritas.ValidateNumber(42)           // Check if it's a valid number
+err := veritas.ValidatePositive(42)         // Check if positive
+err := veritas.ValidateNegative(-5)         // Check if negative
+err := veritas.ValidateEven(8)              // Check if even
 
 // Comparison validation
-err := v.BiggerThan(10, 5)      // 10 > 5
-err := v.SmallerThan(3, 10)     // 3 < 10
-err := v.Between(15, 10, 20)    // 10 <= 15 <= 20
+err := veritas.ValidateBiggerThan(10, 5)      // 10 > 5
+err := veritas.ValidateSmallerThan(3, 10)     // 3 < 10
+err := veritas.ValidateBetween(15, 10, 20)    // 10 <= 15 <= 20
 
 // Prime number validation
-err := v.IsPrime(17)            // Check if prime
+err := veritas.ValidatePrime(17)            // Check if prime
 ```
 
 ## API Reference
@@ -124,20 +120,20 @@ err := v.IsPrime(17)            // Check if prime
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `CNPJ(cnpj interface{}) error` | Validates Brazilian CNPJ | `"11.222.333/0001-81"` |
-| `CPF(cpf interface{}) error` | Validates Brazilian CPF | `"123.456.789-09"` |
-| `Email(email interface{}) error` | Validates email format | `"user@example.com"` |
-| `Phone(phone interface{}) error` | Validates Brazilian phone | `"+55 41 9.9504-8710"` |
-| `URL(url interface{}) error` | Validates URL + HTTP 200 | `"https://example.com"` |
-| `String(str interface{}, min, max int) error` | Validates string length | `"hello", 3, 10` |
-| `IsNumber(num interface{}) error` | Validates if number | `42` |
-| `IsPositive(num interface{}) error` | Validates if positive | `42` |
-| `IsNegative(num interface{}) error` | Validates if negative | `-5` |
-| `IsEven(num interface{}) error` | Validates if even | `8` |
-| `BiggerThan(num interface{}, than float64) error` | Validates if bigger | `10, 5` |
-| `SmallerThan(num interface{}, than float64) error` | Validates if smaller | `3, 10` |
-| `Between(num interface{}, min, max float64) error` | Validates if between | `15, 10, 20` |
-| `IsPrime(num interface{}) error` | Validates if prime | `17` |
+| `ValidateCNPJ(cnpj interface{}) error` | Validates Brazilian CNPJ | `"11.222.333/0001-81"` |
+| `ValidateCPF(cpf interface{}) error` | Validates Brazilian CPF | `"123.456.789-09"` |
+| `ValidateEmail(email interface{}) error` | Validates email format | `"user@example.com"` |
+| `ValidatePhone(phone interface{}) error` | Validates Brazilian phone | `"+55 41 9.9504-8710"` |
+| `ValidateURL(url interface{}) error` | Validates URL + HTTP 200 | `"https://example.com"` |
+| `ValidateString(str interface{}, min, max int) error` | Validates string length | `"hello", 3, 10` |
+| `ValidateNumber(num interface{}) error` | Validates if number | `42` |
+| `ValidatePositive(num interface{}) error` | Validates if positive | `42` |
+| `ValidateNegative(num interface{}) error` | Validates if negative | `-5` |
+| `ValidateEven(num interface{}) error` | Validates if even | `8` |
+| `ValidateBiggerThan(num interface{}, than float64) error` | Validates if bigger | `10, 5` |
+| `ValidateSmallerThan(num interface{}, than float64) error` | Validates if smaller | `3, 10` |
+| `ValidateBetween(num interface{}, min, max float64) error` | Validates if between | `15, 10, 20` |
+| `ValidatePrime(num interface{}) error` | Validates if prime | `17` |
 
 ### Error Handling
 

@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-// CNPJ validates a Brazilian CNPJ (Cadastro Nacional da Pessoa Jurídica).
-func (v *Validator) CNPJ(cnpj interface{}) error {
+// ValidateCNPJ validates a Brazilian CNPJ (Cadastro Nacional da Pessoa Jurídica).
+func ValidateCNPJ(cnpj interface{}) error {
 	cnpjStr, ok := cnpj.(string)
 	if !ok {
 		return fmt.Errorf("CNPJ must be a string")
@@ -25,13 +25,15 @@ func (v *Validator) CNPJ(cnpj interface{}) error {
 
 	// Check for invalid sequences (all same digits)
 	firstDigit := cnpjStr[0]
+	allSame := true
 	for _, digit := range cnpjStr {
 		if byte(digit) != firstDigit {
+			allSame = false
 			break
 		}
-		if digit == rune(cnpjStr[len(cnpjStr)-1]) {
-			return fmt.Errorf("CNPJ cannot be a sequence of identical digits")
-		}
+	}
+	if allSame {
+		return fmt.Errorf("CNPJ cannot be a sequence of identical digits")
 	}
 
 	// Validate CNPJ check digits

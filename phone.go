@@ -7,50 +7,50 @@ import (
 	"strings"
 )
 
-// Phone validates a Brazilian phone number format.
-func (v *Validator) Phone(phone interface{}) error {
+// ValidatePhone validates a Brazilian phone number format.
+func ValidatePhone(phone interface{}) error {
 	phoneStr, ok := phone.(string)
 	if !ok {
 		return fmt.Errorf("phone must be a string")
 	}
 
 	// Clean the phone string (remove spaces, dots, hyphens)
-	phoneStr = v.cleanPhone(phoneStr)
+	phoneStr = cleanPhone(phoneStr)
 
 	// Check if phone is empty after cleaning
-	if v.IsEmpty(phoneStr) {
+	if isEmpty(phoneStr) {
 		return fmt.Errorf("phone cannot be empty")
 	}
 
 	// Check if it's a mobile number (11 digits total: +55 + DDD + 9 + 8 digits)
 	if len(phoneStr) == 15 && strings.HasPrefix(phoneStr, "+55") {
-		return v.validateMobile(phoneStr)
+		return validateMobile(phoneStr)
 	}
 
 	// Check if it's a landline number (12 digits total: +55 + DDD + 8 digits)
 	if len(phoneStr) == 14 && strings.HasPrefix(phoneStr, "+55") {
-		return v.validateLandline(phoneStr)
+		return validateLandline(phoneStr)
 	}
 
 	// Check if it's without country code (mobile: 11 digits, landline: 10 digits)
 	if len(phoneStr) == 11 {
-		return v.validateMobile("+55" + phoneStr)
+		return validateMobile("+55" + phoneStr)
 	}
 	if len(phoneStr) == 10 {
-		return v.validateLandline("+55" + phoneStr)
+		return validateLandline("+55" + phoneStr)
 	}
 
 	return fmt.Errorf("invalid Brazilian phone number format")
 }
 
 // validateMobile validates a Brazilian mobile phone number.
-func (v *Validator) validateMobile(phone string) error {
+func validateMobile(phone string) error {
 	// Mobile format: +55 + DDD + 9 + 8 digits
 	// Example: +5541995048710
 
 	// Check DDD (area code) - must be 2 digits, first digit 1-9, second digit 1-9
 	ddd := phone[3:5]
-	if !v.isValidDDD(ddd) {
+	if !isValidDDD(ddd) {
 		return fmt.Errorf("invalid area code (DDD)")
 	}
 
@@ -61,7 +61,7 @@ func (v *Validator) validateMobile(phone string) error {
 
 	// Check remaining 8 digits
 	number := phone[6:]
-	if !v.isValidPhoneDigits(number) {
+	if !isValidPhoneDigits(number) {
 		return fmt.Errorf("invalid phone number digits")
 	}
 
@@ -69,19 +69,19 @@ func (v *Validator) validateMobile(phone string) error {
 }
 
 // validateLandline validates a Brazilian landline phone number.
-func (v *Validator) validateLandline(phone string) error {
+func validateLandline(phone string) error {
 	// Landline format: +55 + DDD + 8 digits
 	// Example: +554133464468
 
 	// Check DDD (area code) - must be 2 digits, first digit 1-9, second digit 1-9
 	ddd := phone[3:5]
-	if !v.isValidDDD(ddd) {
+	if !isValidDDD(ddd) {
 		return fmt.Errorf("invalid area code (DDD)")
 	}
 
 	// Check remaining 8 digits
 	number := phone[5:]
-	if !v.isValidPhoneDigits(number) {
+	if !isValidPhoneDigits(number) {
 		return fmt.Errorf("invalid phone number digits")
 	}
 
@@ -89,7 +89,7 @@ func (v *Validator) validateLandline(phone string) error {
 }
 
 // isValidDDD validates Brazilian area codes (DDD).
-func (v *Validator) isValidDDD(ddd string) bool {
+func isValidDDD(ddd string) bool {
 	// Valid DDDs in Brazil (2 digits, first 1-9, second 1-9)
 	validDDDs := []string{
 		"11", "12", "13", "14", "15", "16", "17", "18", "19", // São Paulo
@@ -130,14 +130,14 @@ func (v *Validator) isValidDDD(ddd string) bool {
 }
 
 // isValidPhoneDigits validates phone number digits.
-func (v *Validator) isValidPhoneDigits(digits string) bool {
+func isValidPhoneDigits(digits string) bool {
 	// Check if all characters are digits
 	matched, _ := regexp.MatchString(`^\d+$`, digits)
 	return matched
 }
 
 // cleanPhone removes spaces, dots, hyphens from phone number.
-func (v *Validator) cleanPhone(phone string) string {
+func cleanPhone(phone string) string {
 	// Remove spaces, dots, hyphens, parentheses
 	re := regexp.MustCompile(`[\s\.\-\(\)]`)
 	return re.ReplaceAllString(phone, "")

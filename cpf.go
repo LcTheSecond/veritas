@@ -7,8 +7,8 @@ import (
 	"strconv"
 )
 
-// CPF validates a Brazilian CPF (Cadastro de Pessoas Físicas).
-func (v *Validator) CPF(cpf interface{}) error {
+// ValidateCPF validates a Brazilian CPF (Cadastro de Pessoas Físicas).
+func ValidateCPF(cpf interface{}) error {
 	cpfStr, ok := cpf.(string)
 	if !ok {
 		return fmt.Errorf("CPF must be a string")
@@ -25,13 +25,15 @@ func (v *Validator) CPF(cpf interface{}) error {
 
 	// Check for invalid sequences (all same digits)
 	firstDigit := cpfStr[0]
+	allSame := true
 	for _, digit := range cpfStr {
 		if byte(digit) != firstDigit {
+			allSame = false
 			break
 		}
-		if digit == rune(cpfStr[len(cpfStr)-1]) {
-			return fmt.Errorf("CPF cannot be a sequence of identical digits")
-		}
+	}
+	if allSame {
+		return fmt.Errorf("CPF cannot be a sequence of identical digits")
 	}
 
 	// Validate CPF check digits
