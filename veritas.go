@@ -18,30 +18,11 @@ func New() *Validator {
 	return &Validator{}
 }
 
-// ValidationError represents a validation error with a specific field and message.
-type ValidationError struct {
-	Field   string `json:"field"`
-	Message string `json:"message"`
-}
-
-// Error implements the error interface for ValidationError.
-func (ve *ValidationError) Error() string {
-	return fmt.Sprintf("validation error on field '%s': %s", ve.Field, ve.Message)
-}
-
-// NewValidationError creates a new ValidationError with the given field and message.
-func NewValidationError(field, message string) *ValidationError {
-	return &ValidationError{
-		Field:   field,
-		Message: message,
-	}
-}
-
 // Validate performs validation on a value using the provided validation function.
 // It returns a ValidationError if validation fails, nil otherwise.
 func (v *Validator) Validate(field string, value interface{}, validator func(interface{}) error) *ValidationError {
 	if err := validator(value); err != nil {
-		return NewValidationError(field, err.Error())
+		return NewValidationError(field, ErrorTypeInvalid, err.Error(), value)
 	}
 	return nil
 }
